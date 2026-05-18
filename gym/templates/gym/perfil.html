@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Mi Perfil - Sportiun{% endblock %}
+{% load static %}
+{% block content %}
+
+<div class="container pb-5">
+    <div class="profile-header-gradient text-center shadow">
+        <h2 class="fw-bold mb-1">{{ user.username }}</h2>
+        <p class="opacity-75">Miembro desde {{ user.date_joined|date:"d/m/Y" }}</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card profile-card p-4 p-md-5">
+
+                <!-- Tiles de resumen -->
+                <div class="row g-3 mb-5">
+                    <div class="col-md-2">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Estado</small>
+                            {% if perfil.actualmente_entrenando %}
+                                <span class="status-pill bg-success-subtle text-success">Entrenando</span>
+                            {% else %}
+                                <span class="status-pill bg-light text-muted">En pausa</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Rol</small>
+                            <span class="fw-semibold text-capitalize">{{ perfil.get_rol_display|default:"Cliente" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Peso</small>
+                            <span class="fw-semibold">{{ perfil.peso|default:"—" }}{% if perfil.peso %} kg{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Altura</small>
+                            <span class="fw-semibold">{{ perfil.altura|default:"—" }}{% if perfil.altura %} cm{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Nivel</small>
+                            <span class="fw-semibold">{{ perfil.get_nivel_experiencia_display|default:"No definido" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-5">
+                    <div class="col-md-6">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Sobre mí</small>
+                            <span class="text-dark fw-semibold">{{ perfil.descripcion|default:"No definido" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-tile">
+                            <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.7rem;">Objetivo</small>
+                            <span class="text-dark fw-semibold">{{ perfil.objetivo|default:"No definido" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-5 opacity-25">
+
+                <!-- Formulario de edición -->
+                <div class="row justify-content-center">
+                    <div class="col-xl-10">
+                        <h4 class="fw-bold mb-4">Actualizar mi Perfil</h4>
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Peso (kg)</label>
+                                    {{ form.peso }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Altura (cm)</label>
+                                    {{ form.altura }}
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Nivel de experiencia</label>
+                                    {{ form.nivel_experiencia }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Fecha de nacimiento</label>
+                                    {{ form.fecha_nacimiento }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Sobre mí</label>
+                                {{ form.descripcion }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Mi Objetivo Principal</label>
+                                {{ form.objetivo }}
+                            </div>
+
+                            <div class="mb-4 p-3 border rounded-3 bg-light">
+                                <div class="form-check form-switch d-flex align-items-center gap-3">
+                                    {{ form.actualmente_entrenando }}
+                                    <label class="form-check-label fw-semibold">¿Estás entrenando actualmente?</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'gym:rutinas_list' %}" class="btn btn-light px-4">Cancelar</a>
+                                <button type="submit" class="btn btn-custom-primary px-5">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

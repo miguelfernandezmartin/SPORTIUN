@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar rutina — Sportiun{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-8">
+        <div class="card card-confirm-danger shadow-sm p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="icon-header">⚠️</div>
+                <h2 class="fw-bold mt-2">¿Eliminar esta rutina?</h2>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+
+            <div class="alert-danger-soft mb-4">
+                <p class="mb-0 warning-text fw-semibold">
+                    Se eliminarán la rutina, sus {{ rutina.dias.count }} día{% if rutina.dias.count != 1 %}s{% endif %} y todos sus ejercicios permanentemente.
+                </p>
+            </div>
+
+            <div class="rutina-preview mb-4">
+                <small class="text-uppercase fw-bold text-muted d-block mb-1" style="font-size:.7rem;">Rutina a eliminar</small>
+                <h4 class="fw-bold mb-1 text-dark">{{ rutina.nombre }}</h4>
+                <p class="mb-0 text-muted small">
+                    {% if rutina.descripcion %}{{ rutina.descripcion }}{% else %}<span class="fst-italic">Sin descripción</span>{% endif %}
+                </p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-delete-final">
+                        Confirmar y eliminar todo
+                    </button>
+                    <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-cancel-custom">
+                        No, conservar mi rutina
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

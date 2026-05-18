@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Añadir Ejercicio — {{ rutina.nombre }}{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="card card-custom shadow-sm p-4">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Añadir Ejercicio</h2>
+                <p class="text-muted">
+                    {{ rutina.nombre }} &rsaquo; <strong>{{ dia }}</strong>
+                </p>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Nombre del Ejercicio</label>
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}
+                        <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Series</label>
+                        {{ form.series }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Repeticiones</label>
+                        {{ form.repeticiones }}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Peso sugerido (kg)</label>
+                        {{ form.peso_sugerido }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Descanso entre series (s)</label>
+                        {{ form.descanso }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Notas</label>
+                    {{ form.notas }}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                    <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-light px-4 fw-semibold">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-custom-primary px-5">
+                        Guardar Ejercicio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

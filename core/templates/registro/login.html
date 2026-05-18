@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar sesión — Sportiun{% endblock %}
+{% load static %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-4 col-md-7">
+        <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold">¡Hola de nuevo!</h3>
+                <p class="text-muted">Ingresa tus credenciales para continuar.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase">Usuario</label>
+                    <input type="text" name="username" class="form-control bg-light border-0 py-2" placeholder="Tu nombre de usuario" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold small text-uppercase">Contraseña</label>
+                    <input type="password" name="password" class="form-control bg-light border-0 py-2" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-custom-primary w-100 py-2 mb-3">Entrar</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p class="small text-muted">¿Aún no tienes cuenta? <a href="{% url 'core:registro' %}" class="text-primary fw-bold text-decoration-none">Regístrate</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

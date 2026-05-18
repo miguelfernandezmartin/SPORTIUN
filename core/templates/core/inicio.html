@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Sportiun — Own It{% endblock %}
+{% load static %}
+{% block content %}
+
+<!-- Hero -->
+<div class="landing-hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <p class="text-uppercase fw-bold mb-2" style="color: #60a5fa; letter-spacing: 1.5px; font-size:.85rem;">Tu plataforma de entrenamiento</p>
+            <h1 class="display-4 fw-bold mb-3" style="line-height:1.15;">
+                Domina tu <span style="color:#60a5fa;">progreso.</span><br>
+                Supera tus límites.
+            </h1>
+            <p class="mb-4" style="color:rgba(255,255,255,.75); font-size:1.1rem; max-width:520px;">
+                Diseña tus rutinas semanales, registra cada sesión y evoluciona con datos reales. Todo en un solo lugar.
+            </p>
+            <div class="d-flex gap-3 flex-wrap">
+                {% if user.is_authenticated %}
+                <a href="{% url 'gym:rutinas_list' %}" class="btn btn-custom-primary btn-lg px-4">Mis Rutinas</a>
+                <a href="{% url 'gym:catalogo_ejercicios' %}" class="btn btn-outline-light btn-lg px-4">Ver Catálogo</a>
+                {% else %}
+                <a href="{% url 'core:registro' %}" class="btn btn-custom-primary btn-lg px-4">Empezar gratis</a>
+                <a href="{% url 'core:login' %}" class="btn btn-outline-light btn-lg px-4">Iniciar sesión</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-flex justify-content-end align-items-center">
+            <div class="text-center" style="opacity:.85;">
+                <div style="font-size:7rem; line-height:1;">💪</div>
+                <p class="mt-3 fw-bold" style="color:rgba(255,255,255,.6); letter-spacing:2px; font-size:.8rem; text-transform:uppercase;">Own It</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="landing-feature-card">
+            <div class="landing-feature-icon">📋</div>
+            <h5 class="fw-bold mb-2">Diseña tus rutinas</h5>
+            <p class="text-muted mb-0">Crea planes semanales personalizados con ejercicios por día, series, repeticiones y descansos.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="landing-feature-card">
+            <div class="landing-feature-icon">🏋️</div>
+            <h5 class="fw-bold mb-2">Catálogo de ejercicios</h5>
+            <p class="text-muted mb-0">Más de 800 ejercicios clasificados por músculo y equipamiento. Añade los que necesites a tus rutinas.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="landing-feature-card">
+            <div class="landing-feature-icon">📊</div>
+            <h5 class="fw-bold mb-2">Seguimiento real</h5>
+            <p class="text-muted mb-0">Registra el peso y las repeticiones de cada sesión. Controla tu progresión con datos concretos.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

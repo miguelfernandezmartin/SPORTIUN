@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Mis Rutinas — Sportiun{% endblock %}
+{% load static %}
+{% block content %}
+<div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="fw-extrabold mb-1">Mis Rutinas</h1>
+        <p class="text-muted mb-0">Gestiona tus planes de entrenamiento.</p>
+    </div>
+    
+    <div class="search-box" style="min-width: 300px;">
+        <input type="text" id="routineSearch" class="form-control" placeholder="Buscar por nombre o descripción...">
+    </div>
+
+    <a href="{% url 'gym:crear_rutina' %}" class="btn btn-custom-primary">
+        + Nueva Rutina
+    </a>
+</div>
+
+<div class="row" id="routineContainer">
+    {% for rutina in rutinas %}
+    <div class="col-md-6 col-lg-4 mb-4 routine-item">
+        <div class="card routine-card h-100 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="exercise-count">{{ rutina.total_ejercicios }} ejercicio{% if rutina.total_ejercicios != 1 %}s{% endif %}</span>
+                    <span class="badge bg-light text-muted border">{{ rutina.dias.count }} día{% if rutina.dias.count != 1 %}s{% endif %}</span>
+                </div>
+                <h4 class="routine-name mb-2">{{ rutina.nombre }}</h4>
+                <p class="card-text text-muted">{{ rutina.descripcion|default:"" }}</p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-custom-primary flex-fill text-center">Ver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

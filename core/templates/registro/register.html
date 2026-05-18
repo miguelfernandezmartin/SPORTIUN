@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta — Sportiun{% endblock %}
+{% load static %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-8">
+        <div class="card border-0 shadow-sm p-4 p-md-5" style="border-radius: 20px;">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Crea tu cuenta</h2>
+                <p class="text-muted">Únete a nuestra comunidad.</p>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-uppercase">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-custom-primary w-100 py-2 mt-3 mb-4">Comenzar ahora</button>
+            </form>
+
+            <div class="text-center">
+                <p class="small text-muted">¿Ya eres miembro? <a href="{% url 'core:login' %}" class="text-primary fw-bold text-decoration-none">Inicia sesión</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

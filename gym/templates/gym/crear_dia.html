@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Añadir día — {{ rutina.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'gym:rutinas_list' %}" class="text-decoration-none">Rutinas</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="text-decoration-none">{{ rutina.nombre }}</a>
+                        </li>
+                        <li class="breadcrumb-item active">Añadir día</li>
+                    </ol>
+                </nav>
+
+                <h3 class="fw-bold mb-1">Añadir día de entrenamiento</h3>
+                <p class="text-muted mb-4">Rutina: <strong>{{ rutina.nombre }}</strong></p>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Día de la semana</label>
+                        {{ form.dia }}
+                        {% if form.dia.errors %}
+                            <div class="text-danger small mt-1">{{ form.dia.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            Nombre del bloque <span class="text-muted fw-normal">(opcional)</span>
+                        </label>
+                        {{ form.nombre }}
+                        <div class="form-text">Ej: Push, Piernas, Torso, Cardio...</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-light px-4">Cancelar</a>
+                        <button type="submit" class="btn btn-custom-primary px-5">Añadir día</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
