@@ -15,4 +15,11 @@ urlpatterns = [
     path('perfil/', views.perfil, name='perfil'),
     path('catalogo/', views.catalogo_ejercicios, name='catalogo_ejercicios'),
     path('catalogo/<int:catalogo_id>/anadir/<int:dia_id>/', views.anadir_desde_catalogo, name='anadir_desde_catalogo'),
+    # Panel entrenador
+    path('entrenador/', views.panel_entrenador, name='panel_entrenador'),
+    path('entrenador/clientes/', views.mis_clientes, name='mis_clientes'),
+    path('entrenador/cliente/<int:cliente_id>/', views.perfil_cliente, name='perfil_cliente'),
+    path('entrenador/cliente/<int:cliente_id>/asignar-rutina/', views.asignar_rutina, name='asignar_rutina'),
+    path('entrenador/cliente/<int:cliente_id>/progreso/', views.progreso_cliente, name='progreso_cliente'),
+    path('entrenador/cliente/<int:cliente_id>/feedback/', views.crear_feedback, name='crear_feedback'),
 ]

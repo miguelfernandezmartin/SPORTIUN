@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ejercicio, Rutina, PerfilUsuario, DiaRutina, DIAS_SEMANA
+from .models import Ejercicio, Rutina, PerfilUsuario, DiaRutina, DIAS_SEMANA, FeedbackEntrenador
 
 
 class EjercicioForm(forms.ModelForm):
@@ -130,3 +130,19 @@ class PerfilUsuarioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nivel_experiencia'].required = False
+
+
+class FeedbackEntrenadorForm(forms.ModelForm):
+    class Meta:
+        model = FeedbackEntrenador
+        fields = ['contenido']
+        widgets = {
+            'contenido': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Escribe tu feedback o ajustes recomendados...'
+            }),
+        }
+        labels = {
+            'contenido': 'Feedback',
+        }
