@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Feedback para {{ cliente.username }} — Sportiun{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-lg-7">
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'gym:mis_clientes' %}" class="text-decoration-none">Clientes</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'gym:perfil_cliente' cliente.id %}" class="text-decoration-none">{{ cliente.username }}</a></li>
+      <li class="breadcrumb-item active">Nuevo feedback</li>
+    </ol>
+  </nav>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-4 p-md-5">
+      <div class="text-center mb-4">
+        <div class="icon-header">💬</div>
+        <h4 class="fw-bold mb-1">Feedback para {{ cliente.username }}</h4>
+        <p class="text-muted">Escribe ajustes, observaciones o recomendaciones sobre su entrenamiento.</p>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Rutina relacionada</label>
+          {% if rutinas %}
+          <select name="rutina_id" class="form-select" required>
+            <option value="">— Selecciona una rutina —</option>
+            {% for rutina in rutinas %}
+            <option value="{{ rutina.id }}">{{ rutina.nombre }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <p class="text-muted small">Este cliente no tiene rutinas todavía.</p>
+          {% endif %}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Mensaje</label>
+          <textarea name="contenido" class="form-control" rows="6" required
+                    placeholder="Ej: Buen progreso esta semana. Te recomiendo subir el peso en press banca a 70 kg y bajar ligeramente las repeticiones a 6-8..."></textarea>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-end">
+          <a href="{% url 'gym:perfil_cliente' cliente.id %}" class="btn btn-light px-4">Cancelar</a>
+          <button type="submit" class="btn btn-custom-primary px-5"
+                  {% if not rutinas %}disabled{% endif %}>
+            Enviar feedback
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+</div>
+{% endblock %}

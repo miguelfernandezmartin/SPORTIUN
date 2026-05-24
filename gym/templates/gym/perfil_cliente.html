@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}{{ cliente.username }} — Panel Entrenador{% endblock %}
+{% load static %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'gym:panel_entrenador' %}" class="text-decoration-none">Panel</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'gym:mis_clientes' %}" class="text-decoration-none">Clientes</a></li>
+    <li class="breadcrumb-item active">{{ cliente.username }}</li>
+  </ol>
+</nav>
+
+<div class="row g-4">
+  <!-- Columna izquierda: perfil -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="profile-header-gradient text-center py-4">
+        <div class="avatar-circle mx-auto mb-3" style="width:4rem;height:4rem;font-size:1.5rem;">
+          {{ cliente.username|slice:":1"|upper }}
+        </div>
+        <h5 class="fw-bold mb-0 text-white">{{ cliente.username }}</h5>
+        <small style="color:rgba(255,255,255,.7)">{{ cliente.email|default:"Sin email" }}</small>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="info-tile">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Nivel</small>
+              <span class="fw-semibold small">{{ perfil_cliente.get_nivel_experiencia_display|default:"—" }}</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="info-tile">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Estado</small>
+              {% if perfil_cliente.actualmente_entrenando %}
+              <span class="status-pill bg-success-subtle text-success">Activo</span>
+              {% else %}
+              <span class="status-pill bg-light text-muted">En pausa</span>
+              {% endif %}
+            </div>
+          </div>
+          {% if perfil_cliente.peso %}
+          <div class="col-6">
+            <div class="info-tile">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Peso</small>
+              <span class="fw-semibold small">{{ perfil_cliente.peso }} kg</span>
+            </div>
+          </div>
+          {% endif %}
+          {% if perfil_cliente.altura %}
+          <div class="col-6">
+            <div class="info-tile">
+              <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Altura</small>
+              <span class="fw-semibold small">{{ perfil_cliente.altura }} cm</span>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        {% if perfil_cliente.objetivo %}
+        <div class="info-tile mb-3">
+          <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Objetivo</small>
+          <span class="small">{{ perfil_cliente.objetivo }}</span>
+        </div>
+        {% endif %}
+        {% if perfil_cliente.descripcion %}
+        <div class="info-tile">
+          <small class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size:.65rem;">Sobre el cliente</small>
+          <span class="small">{{ perfil_cliente.descripcion }}</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="card-footer bg-white p-3 d-flex gap-2">
+        <a href="{% url 'gym:asignar_rutina' cliente.id %}" class="btn btn-custom-primary btn-sm flex-fill text-center">+ Asignar rutina</a>
+        <a href="{% url 'gym:crear_feedback' cliente.id %}" class="btn btn-outline-primary btn-sm flex-fill text-center">💬 Feedback</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Columna derecha: rutinas + sesiones + feedback -->
+  <div class="col-lg-8">
+
+    <!-- Rutinas -->
+    <h5 class="fw-bold mb-3">Rutinas asignadas ({{ rutinas.count }})</h5>
+    {% if rutinas %}
+    <div class="row g-2 mb-4">
+      {% for rutina in rutinas %}
+      <div class="col-md-6">
+        <div class="card exercise-card shadow-sm p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="fw-bold mb-1">{{ rutina.nombre }}</h6>
+              <small class="text-muted">{{ rutina.total_ejercicios }} ejercicios &middot; {{ rutina.dias.count }} días</small>
+            </div>
+            <span class="badge bg-light text-dark border small">{{ rutina.fecha_creacion|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted small mb-4">Este cliente no tiene rutinas todavía.</p>
+    {% endif %}
+
+    <!-- Sesiones recientes -->
+    <h5 class="fw-bold mb-3">Sesiones recientes</h5>
+    {% if sesiones_recientes %}
+    <div class="mb-4">
+      {% for sesion in sesiones_recientes %}
+      <div class="timeline-item {% if sesion.completada %}completed{% endif %}">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="fw-semibold">{{ sesion.rutina.nombre }} &rsaquo; {{ sesion.dia_rutina }}</span>
+            <small class="text-muted ms-2">{{ sesion.fecha|date:"d/m/Y H:i" }}</small>
+          </div>
+          {% if sesion.completada %}
+          <span class="badge bg-success-subtle text-success">✅ Completada</span>
+          {% else %}
+          <span class="badge bg-warning-subtle text-warning">⏳ Incompleta</span>
+          {% endif %}
+        </div>
+        {% if sesion.notas %}
+        <p class="text-muted small mt-1 mb-0">{{ sesion.notas }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <a href="{% url 'gym:progreso_cliente' cliente.id %}" class="btn btn-sm btn-outline-secondary mt-2">Ver todo el historial →</a>
+    </div>
+    {% else %}
+    <p class="text-muted small mb-4">Este cliente aún no ha registrado sesiones.</p>
+    {% endif %}
+
+    <!-- Feedback previo -->
+    <h5 class="fw-bold mb-3">Feedback enviado</h5>
+    {% if feedback %}
+    {% for fb in feedback %}
+    <div class="chart-wrapper mb-3">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge bg-primary-subtle text-primary">{{ fb.rutina.nombre }}</span>
+        <small class="text-muted">{{ fb.fecha_creacion|date:"d/m/Y" }}</small>
+      </div>
+      <p class="mb-0">{{ fb.contenido }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-muted small">Aún no has enviado feedback a este cliente.</p>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
