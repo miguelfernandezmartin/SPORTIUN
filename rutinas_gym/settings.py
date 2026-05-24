@@ -136,3 +136,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'gym:rutinas_list'
 LOGOUT_REDIRECT_URL = 'core:inicio'
 LOGIN_URL = 'core:login'
+# ─── Configuración de producción / Render ────────────────────────────────────
+import os
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', SECRET_KEY)
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+_hosts = os.environ.get('ALLOWED_HOSTS', '')
+if _hosts:
+    ALLOWED_HOSTS = [h.strip() for h in _hosts.split(',')]
+
+# WhiteNoise para servir estáticos en producción
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / 'staticfiles'

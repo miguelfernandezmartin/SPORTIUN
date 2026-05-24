@@ -82,6 +82,10 @@
                                class="btn btn-sm btn-outline-primary">
                                 Desde catálogo
                             </a>
+                            <a href="{% url 'gym:iniciar_sesion' dia.id %}"
+                               class="btn btn-sm btn-success">
+                                💪 Entrenar
+                            </a>
                         </div>
                         <a href="{% url 'gym:eliminar_dia' dia.id %}" class="btn btn-sm btn-link text-danger p-0">
                             Eliminar día

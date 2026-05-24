@@ -28,16 +28,26 @@
                         <a class="nav-link px-3" href="{% url 'gym:catalogo_ejercicios' %}">Catálogo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3" href="{% url 'gym:perfil' %}">Mi Perfil</a>
+                        <a class="nav-link px-3" href="{% url 'gym:historial_sesiones' %}">Sesiones</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'gym:mi_progreso' %}">Progreso</a>
+                    </li>
+                    {% if user.perfil.rol == 'entrenador' or user.perfil.rol == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'gym:panel_entrenador' %}">
+                            Panel Entrenador
+                        </a>
+                    </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
 
                 <div class="d-flex align-items-center gap-2">
                     {% if user.is_authenticated %}
-                        <span class="text-white-50 small d-none d-lg-block">
+                        <a class="nav-link text-white-50 px-2 d-none d-lg-block" href="{% url 'gym:perfil' %}">
                             {{ user.username }}
-                        </span>
+                        </a>
                         <a class="btn btn-outline-light btn-sm px-3" href="{% url 'core:logout' %}">Salir</a>
                     {% else %}
                         <a class="nav-link text-white-50 px-2" href="{% url 'core:login' %}">Entrar</a>

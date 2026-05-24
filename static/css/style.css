@@ -403,3 +403,111 @@ footer {
     border-radius: var(--sp-radius-md);
     padding: 1.25rem;
 }
+
+/* ── PANEL ENTRENADOR ────────────────────────────── */
+.stat-card {
+    background: var(--sp-card);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    box-shadow: var(--sp-shadow-sm);
+    transition: box-shadow .2s;
+}
+.stat-card:hover { box-shadow: var(--sp-shadow-md); }
+.stat-icon {
+    font-size: 2rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--sp-radius-md);
+    background: var(--sp-primary-soft);
+}
+.stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1; }
+.stat-label { font-size: .8rem; color: var(--sp-muted); font-weight: 500; margin-top: .15rem; }
+
+.client-card {
+    border: 1px solid var(--sp-border) !important;
+    border-radius: var(--sp-radius-lg) !important;
+    background: var(--sp-card);
+    transition: transform .2s, box-shadow .2s;
+}
+.client-card:hover { transform: translateY(-3px); box-shadow: var(--sp-shadow-md) !important; }
+
+.avatar-circle {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    background: var(--sp-primary-soft);
+    color: var(--sp-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* ── SESIONES ────────────────────────────────────── */
+.session-card {
+    border: 1px solid var(--sp-border) !important;
+    border-radius: var(--sp-radius-md) !important;
+    background: var(--sp-card);
+}
+.session-header {
+    background: var(--sp-primary-soft);
+    border-radius: var(--sp-radius-md) var(--sp-radius-md) 0 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--sp-border);
+}
+.exercise-log-row {
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    padding: .6rem .9rem;
+    margin-bottom: .5rem;
+}
+
+/* ── PROGRESO / GRÁFICAS ─────────────────────────── */
+.chart-wrapper {
+    background: var(--sp-card);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--sp-shadow-sm);
+}
+
+/* ── NAVBAR entrenador badge ────────────────────── */
+.nav-badge {
+    background: var(--sp-primary);
+    color: #fff;
+    border-radius: 50px;
+    font-size: .65rem;
+    padding: 1px 7px;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+/* ── TIMELINE de sesiones ────────────────────────── */
+.timeline-item {
+    border-left: 3px solid var(--sp-border);
+    padding-left: 1.2rem;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+.timeline-item::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--sp-primary);
+    position: absolute;
+    left: -6.5px;
+    top: 4px;
+}
+.timeline-item.completed::before { background: #22c55e; }

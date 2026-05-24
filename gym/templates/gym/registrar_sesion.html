@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Entrenando: {{ sesion.dia_rutina }} — Sportiun{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-xl-9">
+
+  <div class="routine-header mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+      <div>
+        <nav aria-label="breadcrumb" class="mb-2">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'gym:rutinas_list' %}" class="text-decoration-none">Rutinas</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'gym:detalle_rutina' sesion.rutina.id %}" class="text-decoration-none">{{ sesion.rutina.nombre }}</a></li>
+            <li class="breadcrumb-item active">Entrenando</li>
+          </ol>
+        </nav>
+        <h1 class="fw-bold mb-1">💪 {{ sesion.dia_rutina }}</h1>
+        <p class="text-muted mb-0">{{ sesion.rutina.nombre }} &middot; {{ sesion.fecha|date:"d/m/Y H:i" }}</p>
+      </div>
+      {% if sesion.completada %}
+        <span class="badge bg-success fs-6 px-3 py-2">✅ Completada</span>
+      {% else %}
+        <span class="badge bg-warning text-dark fs-6 px-3 py-2">🏋️ En curso</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if sesion.completada %}
+    <div class="alert alert-success">Esta sesión ya está marcada como completada.</div>
+    <a href="{% url 'gym:historial_sesiones' %}" class="btn btn-custom-primary">Ver historial</a>
+  {% else %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if not ejercicios_con_registro %}
+      <div class="text-center py-5 text-muted">
+        <p>Este día no tiene ejercicios configurados todavía.</p>
+        <a href="{% url 'gym:detalle_rutina' sesion.rutina.id %}" class="btn btn-custom-primary">Volver a la rutina</a>
+      </div>
+    {% else %}
+
+    {% for item in ejercicios_con_registro %}
+    {% with ej=item.ejercicio p=item.previo %}
+    <div class="session-card mb-4">
+      <div class="session-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h5 class="fw-bold mb-0 text-primary">{{ ej.nombre }}</h5>
+          <small class="text-muted">
+            Objetivo: {{ ej.series }} series &times; {{ ej.repeticiones }} reps
+            {% if ej.peso_sugerido %}&middot; {{ ej.peso_sugerido }} kg sugeridos{% endif %}
+            {% if ej.descanso %}&middot; {{ ej.descanso }}s descanso{% endif %}
+          </small>
+        </div>
+        {% if p %}
+          <span class="badge bg-success-subtle text-success small">✓ Guardado</span>
+        {% endif %}
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row g-2 mb-2 d-none d-md-flex">
+          <div class="col-1 text-muted small fw-semibold">Serie</div>
+          <div class="col text-muted small fw-semibold">Reps</div>
+          <div class="col text-muted small fw-semibold">Peso (kg)</div>
+          <div class="col text-muted small fw-semibold">Notas</div>
+        </div>
+        
+        {% for fila in item.series_filas %}
+        <div class="row g-2 mb-2 align-items-center">
+          <div class="col-1"><span class="stat-badge">{{ fila.num }}</span></div>
+          <div class="col">
+            <input type="number" name="reps_{{ item.ejercicio.id }}_{{ fila.num }}"           
+                   class="form-control form-control-sm"           
+                   value="{{ fila.reps }}"           
+                   min="0" placeholder="{{ item.ejercicio.repeticiones }}">
+          </div>
+          <div class="col">
+            <input type="number" name="peso_{{ item.ejercicio.id }}_{{ fila.num }}"           
+                   class="form-control form-control-sm"           
+                   value="{{ fila.peso }}"           
+                   step="0.5" min="0"           
+                   placeholder="{{ item.ejercicio.peso_sugerido|default:'—' }}">
+          </div>
+          <div class="col">
+            <input type="text" name="notas_serie_{{ item.ejercicio.id }}_{{ fila.num }}"           
+                   class="form-control form-control-sm"           
+                   value="{{ fila.notas }}"           
+                   placeholder="Opcional">
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+
+    <div class="chart-wrapper mb-4">
+      <label class="form-label fw-semibold">Notas de la sesión <span class="text-muted fw-normal">(opcional)</span></label>
+      <textarea name="notas_sesion" class="form-control" rows="3"
+                placeholder="¿Cómo te has sentido hoy? ¿Algo que destacar?">{{ sesion.notas }}</textarea>
+    </div>
+
+    <div class="d-flex gap-3 flex-wrap justify-content-end mb-5">
+      <a href="{% url 'gym:detalle_rutina' sesion.rutina.id %}" class="btn btn-light px-4">Cancelar</a>
+      <button type="submit" name="accion" value="guardar" class="btn btn-outline-primary px-4">
+        💾 Guardar progreso
+      </button>
+      <button type="submit" name="accion" value="completar" class="btn btn-custom-primary px-5">
+        ✅ Marcar como completada
+      </button>
+    </div>
+
+    {% endif %}
+  </form>
+  {% endif %}
+
+</div>
+</div>
+{% endblock %}
