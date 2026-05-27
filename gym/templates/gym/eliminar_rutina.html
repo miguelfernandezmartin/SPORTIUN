@@ -28,10 +28,10 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="d-grid gap-3">
-                    <button type="submit" class="btn btn-delete-final">
+                    <button type="submit" class="btn btn-sp-danger">
                         Confirmar y eliminar todo
                     </button>
-                    <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-cancel-custom">
+                    <a href="{% url 'gym:detalle_rutina' rutina.id %}" class="btn btn-sp-ghost">
                         No, conservar mi rutina
                     </a>
                 </div>

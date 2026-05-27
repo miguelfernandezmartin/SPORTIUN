@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Progreso de {{ cliente.username }} — Sportiun{% endblock %}
+{% load static %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'gym:mis_clientes' %}" class="text-decoration-none">Clientes</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'gym:perfil_cliente' cliente.id %}" class="text-decoration-none">{{ cliente.username }}</a></li>
+    <li class="breadcrumb-item active">Progreso</li>
+  </ol>
+</nav>
+
+<div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="fw-extrabold mb-1">Progreso de {{ cliente.username }}</h1>
+    <p class="text-muted mb-0">Historial de sesiones registradas.</p>
+  </div>
+  <a href="{% url 'gym:crear_feedback' cliente.id %}" class="btn btn-custom-primary">💬 Enviar feedback</a>
+</div>
+
+<!-- Filtro por rutina -->
+<div class="chart-wrapper mb-4">
+  <form method="get" class="d-flex gap-3 flex-wrap align-items-end">
+    <div>
+      <label class="form-label small fw-semibold mb-1">Filtrar por rutina</label>
+      <select name="rutina_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width:220px;">
+        <option value="">Todas las rutinas</option>
+        {% for r in rutinas %}
+        <option value="{{ r.id }}" {% if rutina_id == r.id|stringformat:'s' %}selected{% endif %}>{{ r.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if rutina_id %}<a href="{% url 'gym:progreso_cliente' cliente.id %}" class="btn btn-light btn-sm">Limpiar</a>{% endif %}
+  </form>
+</div>
+
+{% if page_obj.object_list %}
+{% for sesion in page_obj %}
+<div class="session-card mb-3">
+  <div class="session-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h6 class="fw-bold mb-0">{{ sesion.rutina.nombre }} &rsaquo; {{ sesion.dia_rutina }}</h6>
+      <small class="text-muted">{{ sesion.fecha|date:"d/m/Y H:i" }}</small>
+    </div>
+    {% if sesion.completada %}
+    <span class="badge bg-success">✅ Completada</span>
+    {% else %}
+    <span class="badge bg-warning text-dark">⏳ Incompleta</span>
+    {% endif %}
+  </div>
+  {% if sesion.ejercicios_registrados.all %}
+  <div class="card-body p-3">
+    <div class="row g-2">
+      {% for reg in sesion.ejercicios_registrados.all %}
+      <div class="col-md-6 col-lg-4">
+        <div class="exercise-log-row d-flex justify-content-between align-items-center">
+          <span class="fw-semibold small">{{ reg.ejercicio.nombre }}</span>
+          <span class="text-muted small">
+            {{ reg.series_completadas }}×{{ reg.repeticiones_realizadas }}
+            {% if reg.peso_utilizado %}&middot; <strong class="text-dark">{{ reg.peso_utilizado }} kg</strong>{% endif %}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if sesion.notas %}
+    <p class="text-muted small mt-3 mb-0"><em>📝 {{ sesion.notas }}</em></p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% if page_obj.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&rutina_id={{ rutina_id }}">‹</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&rutina_id={{ rutina_id }}">›</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5 text-muted">
+  <div class="mb-3" style="font-size:3rem;">📭</div>
+  <p>{{ cliente.username }} no ha registrado sesiones todavía.</p>
+</div>
+{% endif %}
+{% endblock %}

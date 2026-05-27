@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Panel del Entrenador — Sportiun{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="fw-extrabold mb-1">Panel del Entrenador</h1>
+    <p class="text-muted mb-0">Gestiona tus clientes y su progreso.</p>
+  </div>
+  <a href="{% url 'gym:mis_clientes' %}" class="btn btn-custom-primary">👥 Ver todos los clientes</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-5">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div>
+        <div class="stat-value">{{ total_clientes }}</div>
+        <div class="stat-label">Clientes activos</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div>
+        <div class="stat-value">{{ total_sesiones }}</div>
+        <div class="stat-label">Sesiones registradas</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div>
+        <div class="stat-value">{{ sesiones_completadas }}</div>
+        <div class="stat-label">Sesiones completadas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Clientes recientes -->
+<h5 class="fw-bold mb-3">Tus clientes</h5>
+
+{% if clientes %}
+<div class="row g-3">
+  {% for perfil in clientes %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card client-card shadow-sm h-100">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="avatar-circle">{{ perfil.usuario.username|slice:":1"|upper }}</div>
+          <div>
+            <h6 class="fw-bold mb-0">{{ perfil.usuario.username }}</h6>
+            <small class="text-muted">{{ perfil.usuario.email|default:"Sin email" }}</small>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge bg-light text-dark border">{{ perfil.get_nivel_experiencia_display|default:"Sin nivel" }}</span>
+          {% if perfil.actualmente_entrenando %}
+          <span class="badge bg-success-subtle text-success">Activo</span>
+          {% else %}
+          <span class="badge bg-secondary-subtle text-muted">En pausa</span>
+          {% endif %}
+        </div>
+        {% if perfil.objetivo %}
+        <p class="text-muted small mb-3">🎯 {{ perfil.objetivo|truncatechars:60 }}</p>
+        {% endif %}
+        <div class="d-flex gap-2">
+          <a href="{% url 'gym:perfil_cliente' perfil.usuario.id %}" class="btn btn-sm btn-custom-primary flex-fill text-center">Ver perfil</a>
+          <a href="{% url 'gym:progreso_cliente' perfil.usuario.id %}" class="btn btn-sm btn-outline-secondary">📊</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <div class="mb-3" style="font-size:3rem;">👤</div>
+  <p class="mb-1">Aún no tienes clientes asignados.</p>
+  <p class="small">Los clientes te pueden asignar como entrenador desde su perfil, o puedes pedirle a un admin que lo configure.</p>
+</div>
+{% endif %}
+{% endblock %}

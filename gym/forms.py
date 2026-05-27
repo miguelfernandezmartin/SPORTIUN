@@ -82,6 +82,7 @@ class PerfilUsuarioForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario
         fields = [
+            'rol',
             'descripcion',
             'objetivo',
             'peso',
@@ -91,6 +92,9 @@ class PerfilUsuarioForm(forms.ModelForm):
             'actualmente_entrenando',
         ]
         widgets = {
+            'rol': forms.Select(attrs={
+                'class': 'form-select'
+            }),
             'descripcion': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
@@ -120,6 +124,7 @@ class PerfilUsuarioForm(forms.ModelForm):
             'actualmente_entrenando': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
+            'rol': 'Soy…',
             'peso': 'Peso (kg)',
             'altura': 'Altura (cm)',
             'nivel_experiencia': 'Nivel de experiencia',

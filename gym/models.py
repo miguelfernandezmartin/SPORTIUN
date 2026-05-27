@@ -136,13 +136,24 @@ class Sesion(models.Model):
 class EjercicioRegistrado(models.Model):
     sesion = models.ForeignKey(Sesion, on_delete=models.CASCADE, related_name='ejercicios_registrados')
     ejercicio = models.ForeignKey(Ejercicio, on_delete=models.CASCADE)
-    series_completadas = models.PositiveIntegerField()
-    repeticiones_realizadas = models.PositiveIntegerField()
-    peso_utilizado = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, help_text='kg')
     notas = models.TextField(blank=True)
 
+class SerieRegistrada(models.Model):
+    ejercicio_registrado = models.ForeignKey(
+        EjercicioRegistrado,
+        on_delete=models.CASCADE,
+        related_name='series',
+    )
+    numero_serie = models.PositiveIntegerField()
+    repeticiones = models.PositiveIntegerField()
+    peso = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    notas = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ['numero_serie']
+
     def __str__(self):
-        return f"{self.ejercicio.nombre} - {self.sesion.fecha.date()}"
+        return f"Serie {self.numero_serie}: {self.repeticiones} reps @ {self.peso} kg"
 
 
 class FeedbackEntrenador(models.Model):

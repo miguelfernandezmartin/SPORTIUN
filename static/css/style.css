@@ -95,6 +95,88 @@ main.container {
     box-shadow: 0 4px 14px rgba(13,110,253,.35);
 }
 
+/* Variantes de color del botón principal */
+.btn-sp-secondary {
+    background-color: #475569;
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-secondary:hover, .btn-sp-secondary:focus {
+    background-color: #334155;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(71,85,105,.35);
+}
+
+.btn-sp-success {
+    background-color: #16a34a;
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-success:hover, .btn-sp-success:focus {
+    background-color: #15803d;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(22,163,74,.35);
+}
+
+.btn-sp-danger {
+    background-color: var(--sp-danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-danger:hover, .btn-sp-danger:focus {
+    background-color: #b02a37;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(220,53,69,.35);
+}
+
+.btn-sp-ghost {
+    background-color: transparent;
+    color: var(--sp-muted);
+    border: 1.5px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: border-color .2s, color .2s, transform .15s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-ghost:hover, .btn-sp-ghost:focus {
+    border-color: #94a3b8;
+    color: var(--sp-text);
+    transform: translateY(-1px);
+}
+
+/* Tamaño small para los botones dentro de cards/accordions */
+.btn-sp-sm {
+    padding: .35rem .85rem;
+    font-size: .82rem;
+}
+
 .btn-delete-confirm,
 .btn-delete-final {
     background-color: var(--sp-danger);
@@ -403,3 +485,111 @@ footer {
     border-radius: var(--sp-radius-md);
     padding: 1.25rem;
 }
+
+/* ── PANEL ENTRENADOR ────────────────────────────── */
+.stat-card {
+    background: var(--sp-card);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    box-shadow: var(--sp-shadow-sm);
+    transition: box-shadow .2s;
+}
+.stat-card:hover { box-shadow: var(--sp-shadow-md); }
+.stat-icon {
+    font-size: 2rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--sp-radius-md);
+    background: var(--sp-primary-soft);
+}
+.stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1; }
+.stat-label { font-size: .8rem; color: var(--sp-muted); font-weight: 500; margin-top: .15rem; }
+
+.client-card {
+    border: 1px solid var(--sp-border) !important;
+    border-radius: var(--sp-radius-lg) !important;
+    background: var(--sp-card);
+    transition: transform .2s, box-shadow .2s;
+}
+.client-card:hover { transform: translateY(-3px); box-shadow: var(--sp-shadow-md) !important; }
+
+.avatar-circle {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    background: var(--sp-primary-soft);
+    color: var(--sp-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* ── SESIONES ────────────────────────────────────── */
+.session-card {
+    border: 1px solid var(--sp-border) !important;
+    border-radius: var(--sp-radius-md) !important;
+    background: var(--sp-card);
+}
+.session-header {
+    background: var(--sp-primary-soft);
+    border-radius: var(--sp-radius-md) var(--sp-radius-md) 0 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--sp-border);
+}
+.exercise-log-row {
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    padding: .6rem .9rem;
+    margin-bottom: .5rem;
+}
+
+/* ── PROGRESO / GRÁFICAS ─────────────────────────── */
+.chart-wrapper {
+    background: var(--sp-card);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--sp-shadow-sm);
+}
+
+/* ── NAVBAR entrenador badge ────────────────────── */
+.nav-badge {
+    background: var(--sp-primary);
+    color: #fff;
+    border-radius: 50px;
+    font-size: .65rem;
+    padding: 1px 7px;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+/* ── TIMELINE de sesiones ────────────────────────── */
+.timeline-item {
+    border-left: 3px solid var(--sp-border);
+    padding-left: 1.2rem;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+.timeline-item::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--sp-primary);
+    position: absolute;
+    left: -6.5px;
+    top: 4px;
+}
+.timeline-item.completed::before { background: #22c55e; }

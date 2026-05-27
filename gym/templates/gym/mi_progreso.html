@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Mi Progreso — Sportiun{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="fw-extrabold mb-1">Mi Progreso</h1>
+    <p class="text-muted mb-0">Evolución de tus cargas y volumen de entrenamiento.</p>
+  </div>
+  <a href="{% url 'gym:historial_sesiones' %}" class="btn btn-outline-secondary">← Historial</a>
+</div>
+
+<!-- Stats globales -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">🏋️</div>
+      <div>
+        <div class="stat-value">{{ total_sesiones }}</div>
+        <div class="stat-label">Sesiones completadas</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div>
+        <div class="stat-value">{{ total_ejercicios_log }}</div>
+        <div class="stat-label">Ejercicios registrados</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div>
+        <div class="stat-value">{{ peso_maximo|floatformat:1 }} kg</div>
+        <div class="stat-label">Peso máximo registrado</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Selector de ejercicio -->
+<div class="chart-wrapper mb-4">
+  <h6 class="fw-bold mb-3">📊 Evolución por ejercicio</h6>
+  <form method="get" class="d-flex gap-3 flex-wrap align-items-end">
+    <div style="min-width:260px;">
+      <label class="form-label small fw-semibold mb-1">Selecciona un ejercicio</label>
+      <select name="ejercicio_id" class="form-select" onchange="this.form.submit()">
+        <option value="">— Elige un ejercicio —</option>
+        {% for ej in ejercicios_registrados %}
+        <option value="{{ ej.ejercicio__id }}"
+          {% if ejercicio_sel_id == ej.ejercicio__id|stringformat:'s' %}selected{% endif %}>
+          {{ ej.ejercicio__nombre }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if ejercicio_sel_id %}
+    <a href="{% url 'gym:mi_progreso' %}" class="btn btn-light btn-sm">Limpiar</a>
+    {% endif %}
+  </form>
+
+  {% if ejercicio_sel_id and grafica_labels != '[]' %}
+  <hr class="my-4 opacity-25">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <h6 class="fw-semibold mb-2 text-muted small text-uppercase">Peso utilizado (kg)</h6>
+      <canvas id="chartPeso" height="160"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h6 class="fw-semibold mb-2 text-muted small text-uppercase">Volumen total (kg·reps)</h6>
+      <canvas id="chartVolumen" height="160"></canvas>
+    </div>
+  </div>
+  {% elif ejercicio_sel_id %}
+  <p class="text-muted mt-3 small">No hay datos suficientes para mostrar la gráfica de este ejercicio.</p>
+  {% else %}
+  <p class="text-muted mt-3 small">Selecciona un ejercicio para ver su evolución.</p>
+  {% endif %}
+</div>
+
+{% if not ejercicios_registrados %}
+<div class="text-center py-5 text-muted">
+  <div class="mb-3" style="font-size:3rem;">📈</div>
+  <p class="mb-3">Aún no tienes datos de entrenamiento. ¡Empieza a registrar sesiones!</p>
+  <a href="{% url 'gym:rutinas_list' %}" class="btn btn-custom-primary">Ir a mis rutinas</a>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const labels  = {{ grafica_labels|safe }};
+  const peso    = {{ grafica_peso|safe }};
+  const volumen = {{ grafica_volumen|safe }};
+  if (!labels.length) return;
+
+  const commonOpts = (label, color) => ({
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data: label === 'Peso (kg)' ? peso : volumen,
+        borderColor: color,
+        backgroundColor: color.replace(')', ', .1)').replace('rgb', 'rgba'),
+        tension: 0.35,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.06)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  const pesoCanvas = document.getElementById('chartPeso');
+  if (pesoCanvas) new Chart(pesoCanvas, commonOpts('Peso (kg)', 'rgb(13,110,253)'));
+
+  const volCanvas = document.getElementById('chartVolumen');
+  if (volCanvas) {
+    const opts = commonOpts('Volumen', 'rgb(34,197,94)');
+    opts.data.datasets[0].data = volumen;
+    new Chart(volCanvas, opts);
+  }
+});
+</script>
+{% endblock %}
