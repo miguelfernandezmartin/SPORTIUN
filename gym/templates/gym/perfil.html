@@ -80,6 +80,20 @@
                                 <div class="form-text text-muted">Si cambias a <strong>Entrenador</strong> tendrás acceso al panel de gestión de clientes.</div>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Mi entrenador</label>
+                                {{ form.entrenador }}
+                                {% if tiene_entrenador %}
+                                <div class="form-text text-success fw-semibold">
+                                    Entrenador asignado: {{ perfil.entrenador.username }}
+                                </div>
+                                {% else %}
+                                <div class="form-text text-muted">
+                                    Selecciona un entrenador para que pueda gestionar tus rutinas y seguir tu progreso.
+                                </div>
+                                {% endif %}
+                            </div>
+
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Peso (kg)</label>

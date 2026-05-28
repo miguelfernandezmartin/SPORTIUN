@@ -8,15 +8,26 @@
     <h1 class="fw-extrabold mb-1">Mis Clientes</h1>
     <p class="text-muted mb-0">{{ page_obj.paginator.count }} cliente{% if page_obj.paginator.count != 1 %}s{% endif %} asignados.</p>
   </div>
+<<<<<<< HEAD
   <a href="{% url 'gym:panel_entrenador' %}" class="btn btn-sp-ghost">← Panel</a>
 </div>
 
+=======
+  <a href="{% url 'gym:panel_entrenador' %}" class="btn btn-outline-secondary">← Panel</a>
+</div>
+
+<!-- Buscador -->
+>>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
 <div class="chart-wrapper mb-4">
   <form method="get" class="d-flex gap-3">
     <input type="text" name="q" value="{{ busqueda }}" class="form-control"
            placeholder="Buscar por nombre, usuario o email...">
     <button type="submit" class="btn btn-custom-primary px-4">Buscar</button>
+<<<<<<< HEAD
     {% if busqueda %}<a href="{% url 'gym:mis_clientes' %}" class="btn btn-sp-ghost px-3">✕</a>{% endif %}
+=======
+    {% if busqueda %}<a href="{% url 'gym:mis_clientes' %}" class="btn btn-light px-3">✕</a>{% endif %}
+>>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
   </form>
 </div>
 
@@ -43,12 +54,21 @@
           <span class="badge bg-light text-dark border">{{ perfil.usuario.rutinas.count }} rutina{% if perfil.usuario.rutinas.count != 1 %}s{% endif %}</span>
         </div>
         {% if perfil.objetivo %}
+<<<<<<< HEAD
         <p class="text-muted small mb-3">{{ perfil.objetivo|truncatechars:55 }}</p>
         {% endif %}
         <div class="d-flex gap-2 flex-wrap">
           <a href="{% url 'gym:perfil_cliente' perfil.usuario.id %}" class="btn btn-custom-primary btn-sp-sm flex-fill text-center">Perfil</a>
           <a href="{% url 'gym:progreso_cliente' perfil.usuario.id %}" class="btn btn-sp-secondary btn-sp-sm">Progreso</a>
           <a href="{% url 'gym:crear_feedback' perfil.usuario.id %}" class="btn btn-sp-ghost btn-sp-sm">Feedback</a>
+=======
+        <p class="text-muted small mb-3">🎯 {{ perfil.objetivo|truncatechars:55 }}</p>
+        {% endif %}
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'gym:perfil_cliente' perfil.usuario.id %}" class="btn btn-sm btn-custom-primary flex-fill text-center">Perfil</a>
+          <a href="{% url 'gym:progreso_cliente' perfil.usuario.id %}" class="btn btn-sm btn-outline-secondary">📊 Progreso</a>
+          <a href="{% url 'gym:crear_feedback' perfil.usuario.id %}" class="btn btn-sm btn-outline-primary">💬 Feedback</a>
+>>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
         </div>
       </div>
     </div>
@@ -56,6 +76,10 @@
   {% endfor %}
 </div>
 
+<<<<<<< HEAD
+=======
+<!-- Paginación -->
+>>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
 {% if page_obj.has_other_pages %}
 <nav class="mt-4">
   <ul class="pagination justify-content-center">
@@ -76,4 +100,8 @@
   <p>No se encontraron clientes{% if busqueda %} para "{{ busqueda }}"{% endif %}.</p>
 </div>
 {% endif %}
+<<<<<<< HEAD
 {% endblock %}
+=======
+{% endblock %}
+>>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845

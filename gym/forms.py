@@ -1,5 +1,6 @@
 from django import forms
 from .models import Ejercicio, Rutina, PerfilUsuario, DiaRutina, DIAS_SEMANA, FeedbackEntrenador
+from django.contrib.auth.models import User
 
 
 class EjercicioForm(forms.ModelForm):
@@ -83,6 +84,7 @@ class PerfilUsuarioForm(forms.ModelForm):
         model = PerfilUsuario
         fields = [
             'rol',
+            'entrenador',
             'descripcion',
             'objetivo',
             'peso',
@@ -93,6 +95,9 @@ class PerfilUsuarioForm(forms.ModelForm):
         ]
         widgets = {
             'rol': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'entrenador': forms.Select(attrs={
                 'class': 'form-select'
             }),
             'descripcion': forms.Textarea(attrs={
@@ -125,6 +130,7 @@ class PerfilUsuarioForm(forms.ModelForm):
         }
         labels = {
             'rol': 'Soy…',
+            'entrenador': 'Mi entrenador',
             'peso': 'Peso (kg)',
             'altura': 'Altura (cm)',
             'nivel_experiencia': 'Nivel de experiencia',
@@ -135,6 +141,11 @@ class PerfilUsuarioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nivel_experiencia'].required = False
+        self.fields['entrenador'].required = False
+        self.fields['entrenador'].empty_label = 'Sin entrenador asignado'
+        self.fields['entrenador'].queryset = User.objects.filter(
+            perfil__rol='entrenador'
+        )
 
 
 class FeedbackEntrenadorForm(forms.ModelForm):
