@@ -32,4 +32,8 @@ urlpatterns = [
     path('entrenador/cliente/<int:cliente_id>/asignar-rutina/', views.asignar_rutina, name='asignar_rutina'),
     path('entrenador/cliente/<int:cliente_id>/progreso/', views.progreso_cliente, name='progreso_cliente'),
     path('entrenador/cliente/<int:cliente_id>/feedback/', views.crear_feedback, name='crear_feedback'),
+    # ── Chatbot ──────────────────────────────────────────────────────────────
+    path('chatbot/', views.chatbot, name='chatbot'),
+    path('chatbot/mensaje/', views.chatbot_mensaje, name='chatbot_mensaje'),
+    path('chatbot/limpiar/', views.chatbot_limpiar, name='chatbot_limpiar'),
 ]

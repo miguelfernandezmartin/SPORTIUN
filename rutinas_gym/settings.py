@@ -150,3 +150,7 @@ if _hosts:
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# ─── Chatbot IA ───────────────────────────────────────────────────────────────
+# Pon aquí tu clave de Anthropic o pásala como variable de entorno ANTHROPIC_API_KEY
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')

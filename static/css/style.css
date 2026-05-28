@@ -95,6 +95,88 @@ main.container {
     box-shadow: 0 4px 14px rgba(13,110,253,.35);
 }
 
+/* Variantes de color del botón principal */
+.btn-sp-secondary {
+    background-color: #475569;
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-secondary:hover, .btn-sp-secondary:focus {
+    background-color: #334155;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(71,85,105,.35);
+}
+
+.btn-sp-success {
+    background-color: #16a34a;
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-success:hover, .btn-sp-success:focus {
+    background-color: #15803d;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(22,163,74,.35);
+}
+
+.btn-sp-danger {
+    background-color: var(--sp-danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-danger:hover, .btn-sp-danger:focus {
+    background-color: #b02a37;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(220,53,69,.35);
+}
+
+.btn-sp-ghost {
+    background-color: transparent;
+    color: var(--sp-muted);
+    border: 1.5px solid var(--sp-border);
+    border-radius: var(--sp-radius-sm);
+    padding: .55rem 1.25rem;
+    font-weight: 600;
+    font-size: .9rem;
+    transition: border-color .2s, color .2s, transform .15s;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-sp-ghost:hover, .btn-sp-ghost:focus {
+    border-color: #94a3b8;
+    color: var(--sp-text);
+    transform: translateY(-1px);
+}
+
+/* Tamaño small para los botones dentro de cards/accordions */
+.btn-sp-sm {
+    padding: .35rem .85rem;
+    font-size: .82rem;
+}
+
 .btn-delete-confirm,
 .btn-delete-final {
     background-color: var(--sp-danger);

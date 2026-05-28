@@ -1,17 +1,15 @@
 import html
 import re
 import time
-
 import requests
 from django.core.management.base import BaseCommand
-
 from gym.models import EjercicioCatalogo
 
 WGER_BASE = 'https://wger.de/api/v2'
-LANG_ES = 4   # Español
 LANG_EN = 2   # English
+LANG_ES = 4   # Español
 
-# Traducciones manuales para los campos fijos de la API (no tienen campo ES)
+# Traducciones manuales para los campos fijos de la API (Filtros en Español)
 CATEGORIAS_ES = {
     'Abs': 'Abdominales',
     'Arms': 'Brazos',
@@ -50,7 +48,6 @@ MUSCULOS_ES = {
     'Tibialis anterior': 'Tibial anterior',
     'Adductor longus': 'Aductor largo',
     'Tensor fasciae latae': 'Tensor de la fascia lata',
-    # name_en comunes
     'Quads': 'Cuádriceps',
     'Hamstrings': 'Isquiotibiales',
     'Glutes': 'Glúteos',
@@ -88,27 +85,16 @@ EQUIPAMIENTO_ES = {
 
 
 def limpiar_html(texto):
+    if not texto:
+        return ''
     texto = html.unescape(texto)
     texto = re.sub(r'<[^>]+>', ' ', texto)
     texto = re.sub(r'\s+', ' ', texto).strip()
     return texto
 
 
-def traducir(texto, translator):
-    """Traduce un texto al español. Devuelve el original si falla."""
-    if not texto:
-        return ''
-    try:
-        # Google Translate tiene límite de ~5000 caracteres por petición
-        resultado = translator.translate(texto[:4500])
-        time.sleep(0.15)  # respetar rate limit
-        return resultado or texto
-    except Exception:
-        return texto
-
-
 class Command(BaseCommand):
-    help = 'Importa ejercicios desde Wger traduciéndolos al español'
+    help = 'Importa ejercicios desde Wger en inglés manteniendo los filtros en español'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -117,27 +103,9 @@ class Command(BaseCommand):
             default=None,
             help='Número máximo de ejercicios a importar (útil para pruebas)',
         )
-        parser.add_argument(
-            '--sin-traducir',
-            action='store_true',
-            help='Importa en inglés sin traducir (más rápido, para pruebas)',
-        )
 
     def handle(self, *args, **options):
         limite = options['limite']
-        sin_traducir = options['sin_traducir']
-
-        translator = None
-        if not sin_traducir:
-            try:
-                from deep_translator import GoogleTranslator
-                translator = GoogleTranslator(source='en', target='es')
-                self.stdout.write('Traducción automática activada (Google Translate).')
-            except ImportError:
-                self.stderr.write(self.style.WARNING(
-                    'deep-translator no instalado. Ejecuta: pip install deep-translator\n'
-                    'Importando sin traducción automática...'
-                ))
 
         url = f'{WGER_BASE}/exerciseinfo/?format=json&limit=20'
         creados = 0
@@ -145,7 +113,7 @@ class Command(BaseCommand):
         omitidos = 0
         total_procesados = 0
 
-        self.stdout.write('Iniciando importación desde Wger...\n')
+        self.stdout.write(self.style.NOTICE('Iniciando importación directa (Ejercicios en EN / Filtros en ES)...\n'))
 
         while url:
             if limite and total_procesados >= limite:
@@ -169,36 +137,27 @@ class Command(BaseCommand):
 
                 total_procesados += 1
 
-                # 1. Obtener traducción: preferimos español de Wger, fallback inglés
+                # 1. Extraer traducciones disponibles
                 traducciones = {t['language']: t for t in item.get('translations', [])}
-                traduccion_es = traducciones.get(LANG_ES)
+                
+                # Prioridad absoluta al Inglés para mantener consistencia original
                 traduccion_en = traducciones.get(LANG_EN)
-                traduccion_base = traduccion_es or traduccion_en
+                # Fallback al español o al primer idioma registrado si el inglés no existiera de forma explícita
+                traduccion_base = traduccion_en or traducciones.get(LANG_ES) or (item.get('translations', [])[0] if item.get('translations') else None)
 
                 if not traduccion_base or not traduccion_base.get('name', '').strip():
                     omitidos += 1
                     continue
 
-                nombre_base = traduccion_base['name'].strip()
-                descripcion_base = limpiar_html(traduccion_base.get('description', ''))
+                # Asignamos el nombre y descripción nativos (en inglés si está disponible) sin traducir
+                nombre = traduccion_base['name'].strip()
+                descripcion = limpiar_html(traduccion_base.get('description', ''))
 
-                # 2. Si ya hay traducción española en Wger, la usamos directamente
-                if traduccion_es:
-                    nombre = nombre_base
-                    descripcion = descripcion_base
-                elif translator:
-                    # Traducimos el inglés al español
-                    nombre = traducir(nombre_base, translator)
-                    descripcion = traducir(descripcion_base[:2000], translator) if descripcion_base else ''
-                else:
-                    nombre = nombre_base
-                    descripcion = descripcion_base
-
-                # 3. Categoría → traducción manual
+                # 2. Categoría → Guardamos el filtro mapeado a Español
                 cat_en = item.get('category', {}).get('name', '') if item.get('category') else ''
                 categoria = CATEGORIAS_ES.get(cat_en, cat_en)
 
-                # 4. Músculo principal → nombre latín → dict ES; si no, name_en → dict ES
+                # 3. Músculo principal → Guardamos el filtro mapeado a Español
                 musculos = item.get('muscles', [])
                 if musculos:
                     nombre_cientifico = musculos[0].get('name', '')
@@ -212,15 +171,16 @@ class Command(BaseCommand):
                 else:
                     musculo_principal = ''
 
-                # 5. Equipamiento → traducción manual
+                # 4. Equipamiento → Guardamos el filtro mapeado a Español
                 equipos = item.get('equipment', [])
                 equipo_en = equipos[0].get('name', '') if equipos else ''
                 equipamiento = EQUIPAMIENTO_ES.get(equipo_en, equipo_en)
 
-                # 6. Imagen
+                # 5. Imagen
                 imagenes = item.get('images', [])
                 imagen_url = imagenes[0].get('image', '') if imagenes else ''
 
+                # 6. Guardar o actualizar en la Base de Datos
                 _, created = EjercicioCatalogo.objects.update_or_create(
                     wger_id=item['id'],
                     defaults={
@@ -240,12 +200,13 @@ class Command(BaseCommand):
 
             url = data.get('next')
             if url:
-                time.sleep(0.2)
+                # Un pequeño sleep de cortesía para no saturar la API de Wger
+                time.sleep(0.1)
 
         self.stdout.write(self.style.SUCCESS(
-            f'\nImportación completada:'
-            f'\n  Creados:      {creados}'
-            f'\n  Actualizados: {actualizados}'
-            f'\n  Omitidos:     {omitidos}'
-            f'\n  Total:        {total_procesados}'
+            f'\n¡Importación completada con éxito!'
+            f'\n  Creados (Nuevos): {creados}'
+            f'\n  Actualizados:     {actualizados}'
+            f'\n  Omitidos:         {omitidos}'
+            f'\n  Total analizados: {total_procesados}'
         ))

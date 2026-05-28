@@ -8,10 +8,9 @@
     <h1 class="fw-extrabold mb-1">Mis Sesiones</h1>
     <p class="text-muted mb-0">Historial de entrenamientos registrados.</p>
   </div>
-  <a href="{% url 'gym:mi_progreso' %}" class="btn btn-outline-primary">📊 Ver mi progreso</a>
+  <a href="{% url 'gym:mi_progreso' %}" class="btn btn-sp-secondary">Ver mi progreso</a>
 </div>
 
-<!-- Filtro por rutina -->
 <div class="chart-wrapper mb-4">
   <form method="get" class="d-flex gap-3 flex-wrap align-items-end">
     <div>
@@ -24,20 +23,18 @@
       </select>
     </div>
     {% if rutina_id %}
-    <a href="{% url 'gym:historial_sesiones' %}" class="btn btn-light btn-sm">Limpiar</a>
+    <a href="{% url 'gym:historial_sesiones' %}" class="btn btn-sp-ghost btn-sp-sm">Limpiar</a>
     {% endif %}
   </form>
 </div>
 
-<!-- Gráfica de volumen -->
 {% if grafica_labels != '[]' %}
 <div class="chart-wrapper mb-4">
-  <h6 class="fw-bold mb-3">📈 Volumen total por sesión (kg·reps)</h6>
+  <h6 class="fw-bold mb-3">Volumen total por sesión (kg × reps)</h6>
   <canvas id="chartVolumen" height="90"></canvas>
 </div>
 {% endif %}
 
-<!-- Lista de sesiones -->
 {% if page_obj.object_list %}
 {% for sesion in page_obj %}
 <div class="session-card mb-3">
@@ -48,38 +45,42 @@
     </div>
     <div class="d-flex gap-2 align-items-center">
       {% if sesion.completada %}
-        <span class="badge bg-success">✅ Completada</span>
+        <span class="badge bg-success">Completada</span>
       {% else %}
-        <span class="badge bg-warning text-dark">⏳ Incompleta</span>
-        <a href="{% url 'gym:registrar_sesion' sesion.id %}" class="btn btn-sm btn-outline-primary">Continuar</a>
+        <span class="badge bg-warning text-dark">Incompleta</span>
+        <a href="{% url 'gym:registrar_sesion' sesion.id %}" class="btn btn-sp-secondary btn-sp-sm">Continuar</a>
       {% endif %}
     </div>
   </div>
 
-  {% if sesion.ejercicios_registrados.all %}
+  {% if sesion.ejercicios_registrados.exists %}
   <div class="card-body p-3">
-    <div class="row g-2">
-      {% for reg in sesion.ejercicios_registrados.all %}
-      <div class="col-md-6 col-lg-4">
-        <div class="exercise-log-row d-flex justify-content-between align-items-center">
-          <span class="fw-semibold small">{{ reg.ejercicio.nombre }}</span>
-          <span class="text-muted small">
-            {{ reg.series_completadas }}×{{ reg.repeticiones_realizadas }}
-            {% if reg.peso_utilizado %} · <strong class="text-dark">{{ reg.peso_utilizado }} kg</strong>{% endif %}
-          </span>
-        </div>
+    {% for er in sesion.ejercicios_registrados.all %}
+    <div class="mb-3">
+      <p class="fw-semibold small mb-1">{{ er.ejercicio.nombre }}</p>
+      <div class="d-flex flex-wrap gap-2">
+        {% for serie in er.series.all %}
+        <span class="badge bg-light text-dark border" style="font-size:.78rem;">
+          Serie {{ serie.numero_serie }}:
+          {{ serie.repeticiones }} reps
+          {% if serie.peso %}&middot; {{ serie.peso }} kg{% endif %}
+        </span>
+        {% empty %}
+        <span class="text-muted small">Sin series registradas</span>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
+    {% endfor %}
     {% if sesion.notas %}
-    <p class="text-muted small mt-3 mb-0"><em>📝 {{ sesion.notas }}</em></p>
+    <p class="text-muted small mt-2 mb-0"><em>{{ sesion.notas }}</em></p>
     {% endif %}
   </div>
+  {% else %}
+  <div class="card-body p-3 text-muted small">No hay ejercicios registrados en esta sesión.</div>
   {% endif %}
 </div>
 {% endfor %}
 
-<!-- Paginación -->
 {% if page_obj.has_other_pages %}
 <nav class="mt-4">
   <ul class="pagination justify-content-center">
@@ -102,7 +103,6 @@
 </div>
 {% endif %}
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
   new Chart(canvas, {
     type: 'line',
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         label: 'Volumen (kg·reps)',
         data: volumen,

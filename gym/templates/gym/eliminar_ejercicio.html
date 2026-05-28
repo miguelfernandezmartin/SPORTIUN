@@ -29,15 +29,15 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="d-grid gap-3">
-                    <button type="submit" class="btn btn-delete-confirm">
+                    <button type="submit" class="btn btn-sp-danger">
                         Sí, eliminar ejercicio
                     </button>
                     {% if ejercicio.dia_rutina %}
-                    <a href="{% url 'gym:detalle_rutina' ejercicio.dia_rutina.rutina.id %}" class="btn btn-cancel-custom">
+                    <a href="{% url 'gym:detalle_rutina' ejercicio.dia_rutina.rutina.id %}" class="btn btn-sp-ghost">
                         Cancelar
                     </a>
                     {% else %}
-                    <a href="{% url 'gym:rutinas_list' %}" class="btn btn-cancel-custom">Cancelar</a>
+                    <a href="{% url 'gym:rutinas_list' %}" class="btn btn-sp-ghost">Cancelar</a>
                     {% endif %}
                 </div>
             </form>

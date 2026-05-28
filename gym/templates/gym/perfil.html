@@ -13,7 +13,6 @@
         <div class="col-lg-10">
             <div class="card profile-card p-4 p-md-5">
 
-                <!-- Tiles de resumen -->
                 <div class="row g-3 mb-5">
                     <div class="col-md-2">
                         <div class="info-tile">
@@ -68,13 +67,32 @@
 
                 <hr class="mb-5 opacity-25">
 
-                <!-- Formulario de edición -->
                 <div class="row justify-content-center">
                     <div class="col-xl-10">
                         <h4 class="fw-bold mb-4">Actualizar mi Perfil</h4>
 
                         <form method="post" novalidate>
                             {% csrf_token %}
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Soy…</label>
+                                {{ form.rol }}
+                                <div class="form-text text-muted">Si cambias a <strong>Entrenador</strong> tendrás acceso al panel de gestión de clientes.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Mi entrenador</label>
+                                {{ form.entrenador }}
+                                {% if tiene_entrenador %}
+                                <div class="form-text text-success fw-semibold">
+                                    Entrenador asignado: {{ perfil.entrenador.username }}
+                                </div>
+                                {% else %}
+                                <div class="form-text text-muted">
+                                    Selecciona un entrenador para que pueda gestionar tus rutinas y seguir tu progreso.
+                                </div>
+                                {% endif %}
+                            </div>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">
@@ -116,7 +134,7 @@
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                                <a href="{% url 'gym:rutinas_list' %}" class="btn btn-light px-4">Cancelar</a>
+                                <a href="{% url 'gym:rutinas_list' %}" class="btn btn-sp-ghost px-4">Cancelar</a>
                                 <button type="submit" class="btn btn-custom-primary px-5">Guardar Cambios</button>
                             </div>
                         </form>
