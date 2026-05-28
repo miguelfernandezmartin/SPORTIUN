@@ -6,10 +6,7 @@
 <div class="row justify-content-center">
 <div class="col-xl-9">
 
-<<<<<<< HEAD
   <!-- Cabecera -->
-=======
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
   <div class="routine-header mb-4">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
       <div>
@@ -20,7 +17,6 @@
             <li class="breadcrumb-item active">Entrenando</li>
           </ol>
         </nav>
-<<<<<<< HEAD
         <h1 class="fw-bold mb-1">{{ sesion.dia_rutina }}</h1>
         <p class="text-muted mb-0">{{ sesion.rutina.nombre }} &middot; {{ sesion.fecha|date:"d/m/Y H:i" }}</p>
       </div>
@@ -28,15 +24,6 @@
         <span class="badge bg-success fs-6 px-3 py-2">Completada</span>
       {% else %}
         <span class="badge bg-warning text-dark fs-6 px-3 py-2">En curso</span>
-=======
-        <h1 class="fw-bold mb-1">💪 {{ sesion.dia_rutina }}</h1>
-        <p class="text-muted mb-0">{{ sesion.rutina.nombre }} &middot; {{ sesion.fecha|date:"d/m/Y H:i" }}</p>
-      </div>
-      {% if sesion.completada %}
-        <span class="badge bg-success fs-6 px-3 py-2">✅ Completada</span>
-      {% else %}
-        <span class="badge bg-warning text-dark fs-6 px-3 py-2">🏋️ En curso</span>
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
       {% endif %}
     </div>
   </div>
@@ -57,11 +44,7 @@
     {% else %}
 
     {% for item in ejercicios_con_registro %}
-<<<<<<< HEAD
     {% with ej=item.ejercicio %}
-=======
-    {% with ej=item.ejercicio p=item.previo %}
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
     <div class="session-card mb-4">
       <div class="session-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
@@ -72,18 +55,12 @@
             {% if ej.descanso %}&middot; {{ ej.descanso }}s descanso{% endif %}
           </small>
         </div>
-<<<<<<< HEAD
         {% if item.tiene_datos %}
           <span class="badge bg-success-subtle text-success small">Guardado</span>
-=======
-        {% if p %}
-          <span class="badge bg-success-subtle text-success small">✓ Guardado</span>
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
         {% endif %}
       </div>
 
       <div class="card-body p-4">
-<<<<<<< HEAD
         <div class="row g-2 mb-1 d-none d-md-flex">
           <div class="col-1"><span class="text-muted small fw-semibold">Serie</span></div>
           <div class="col"><span class="text-muted small fw-semibold">Repeticiones</span></div>
@@ -117,35 +94,6 @@
                    name="notas_serie_{{ ej.id }}_{{ fila.num }}"
                    class="form-control form-control-sm"
                    value="{{ fila.notas }}"
-=======
-        <div class="row g-2 mb-2 d-none d-md-flex">
-          <div class="col-1 text-muted small fw-semibold">Serie</div>
-          <div class="col text-muted small fw-semibold">Reps</div>
-          <div class="col text-muted small fw-semibold">Peso (kg)</div>
-          <div class="col text-muted small fw-semibold">Notas</div>
-        </div>
-        
-        {% for fila in item.series_filas %}
-        <div class="row g-2 mb-2 align-items-center">
-          <div class="col-1"><span class="stat-badge">{{ fila.num }}</span></div>
-          <div class="col">
-            <input type="number" name="reps_{{ item.ejercicio.id }}_{{ fila.num }}"           
-                   class="form-control form-control-sm"           
-                   value="{{ fila.reps }}"           
-                   min="0" placeholder="{{ item.ejercicio.repeticiones }}">
-          </div>
-          <div class="col">
-            <input type="number" name="peso_{{ item.ejercicio.id }}_{{ fila.num }}"           
-                   class="form-control form-control-sm"           
-                   value="{{ fila.peso }}"           
-                   step="0.5" min="0"           
-                   placeholder="{{ item.ejercicio.peso_sugerido|default:'—' }}">
-          </div>
-          <div class="col">
-            <input type="text" name="notas_serie_{{ item.ejercicio.id }}_{{ fila.num }}"           
-                   class="form-control form-control-sm"           
-                   value="{{ fila.notas }}"           
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
                    placeholder="Opcional">
           </div>
         </div>
@@ -162,18 +110,9 @@
     </div>
 
     <div class="d-flex gap-3 flex-wrap justify-content-end mb-5">
-<<<<<<< HEAD
       <a href="{% url 'gym:detalle_rutina' sesion.rutina.id %}" class="btn btn-sp-ghost px-4">Cancelar</a>
       <button type="submit" name="accion" value="completar" class="btn btn-sp-success px-5">
         Finalizar entrenamiento
-=======
-      <a href="{% url 'gym:detalle_rutina' sesion.rutina.id %}" class="btn btn-light px-4">Cancelar</a>
-      <button type="submit" name="accion" value="guardar" class="btn btn-outline-primary px-4">
-        💾 Guardar progreso
-      </button>
-      <button type="submit" name="accion" value="completar" class="btn btn-custom-primary px-5">
-        ✅ Marcar como completada
->>>>>>> 99ac9e20e5a05a4941e58bbc821d89989135c845
       </button>
     </div>
 

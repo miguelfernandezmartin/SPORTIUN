@@ -219,7 +219,8 @@ def perfil(request):
             messages.success(request, 'Perfil actualizado correctamente.')
             return redirect('gym:perfil')
     else:
-        form = PerfilUsuarioForm(instance=perfil_usuario)
+        # Pasamos el usuario de la sesión actual al formulario en el GET
+        form = PerfilUsuarioForm(instance=perfil_usuario, user_actual=request.user)
 
     return render(request, 'gym/perfil.html', {
         'form':             form,
@@ -622,14 +623,12 @@ def mi_progreso(request):
         'peso_maximo':            peso_maximo,
     })
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# CHATBOT DE ENTRENAMIENTO
-# ─────────────────────────────────────────────────────────────────────────────
-
 import json as _json
 import urllib.request
 import urllib.error
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 CHATBOT_SYSTEM = """Eres un entrenador personal y experto en fitness dentro de la app Sportiun.
 Tu especialidad es el entrenamiento de fuerza, hipertrofia, pérdida de grasa y planificación de rutinas.
@@ -649,34 +648,37 @@ Si el usuario no da suficiente información (nivel, objetivo, días disponibles)
 No respondas preguntas que no tengan relación con el entrenamiento, la salud deportiva o la nutrición."""
 
 
-def _llamar_api_anthropic(messages_historial):
-    from django.conf import settings as dj_settings
-    api_key = getattr(dj_settings, 'ANTHROPIC_API_KEY', '')
-    if not api_key:
-        raise ValueError('ANTHROPIC_API_KEY no configurada')
+def _llamar_api_ollama(messages_historial):
+    # Copiamos el historial para no modificar la sesión original del usuario
+    historial_con_system = [{'role': 'system', 'content': CHATBOT_SYSTEM}]
+    
+    # Adaptamos los roles si es necesario (Ollama entiende 'user' y 'assistant')
+    for msg in messages_historial:
+        role = 'assistant' if msg['role'] == 'bot' else msg['role']
+        historial_con_system.append({'role': role, 'content': msg['content']})
 
     payload = _json.dumps({
-        "model": "claude-sonnet-4-20250514",
-        "max_tokens": 1000,
-        "system": CHATBOT_SYSTEM,
-        "messages": messages_historial,
+        "model": "llama3",  # Asegúrate de haber hecho 'ollama run llama3' en tu terminal
+        "messages": historial_con_system,
+        "stream": False,    # Desactivamos el streaming para recibir la respuesta de golpe
+        "options": {
+            "temperature": 0.7
+        }
     }).encode('utf-8')
 
+    # Ollama por defecto corre localmente en el puerto 11434
     req = urllib.request.Request(
-        'https://api.anthropic.com/v1/messages',
+        'http://localhost:11434/api/chat',
         data=payload,
-        headers={
-            'Content-Type': 'application/json',
-            'x-api-key': api_key,
-            'anthropic-version': '2023-06-01',
-        },
+        headers={'Content-Type': 'application/json'},
         method='POST',
     )
 
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with urllib.request.urlopen(req, timeout=45) as resp:
         data = _json.loads(resp.read().decode('utf-8'))
 
-    return data['content'][0]['text']
+    # La API de chat de Ollama devuelve la estructura ['message']['content']
+    return data['message']['content']
 
 
 @login_required
@@ -690,10 +692,7 @@ def chatbot(request):
 @login_required
 def chatbot_mensaje(request):
     if request.method != 'POST':
-        from django.http import JsonResponse
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-    from django.http import JsonResponse
 
     try:
         body = _json.loads(request.body)
@@ -710,14 +709,12 @@ def chatbot_mensaje(request):
         historial = historial[-40:]
 
     try:
-        respuesta = _llamar_api_anthropic(historial)
-    except ValueError:
-        return JsonResponse({'error': 'api_key'}, status=200)
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode('utf-8', errors='replace')
-        if e.code in (401, 403):
-            return JsonResponse({'error': 'api_key'}, status=200)
-        return JsonResponse({'error': f'Error API ({e.code}): {error_body[:200]}'}, status=500)
+        respuesta = _llamar_api_ollama(historial)
+    except urllib.error.URLError as e:
+        # Si Ollama no está encendido o el puerto está cerrado
+        return JsonResponse({
+            'error': 'No se pudo conectar con el servidor local de Ollama. ¿Está la aplicación ejecutándose?'
+        }, status=500)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -732,5 +729,4 @@ def chatbot_mensaje(request):
 def chatbot_limpiar(request):
     request.session['chatbot_historial'] = []
     request.session.modified = True
-    from django.http import JsonResponse
     return JsonResponse({'ok': True})

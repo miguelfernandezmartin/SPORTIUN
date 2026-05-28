@@ -257,8 +257,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   const canvas = document.getElementById('chartProgresoCliente');
   if (!canvas) return;
-  const labels  = {{ grafica_labels|safe }};
-  const volumen = {{ grafica_volumen|safe }};
+  const labels  = JSON.parse('{{ grafica_labels|safe }}');
+  const volumen = JSON.parse('{{ grafica_volumen|safe }}');
   if (!labels.length) return;
   new Chart(canvas, {
     type: 'bar',

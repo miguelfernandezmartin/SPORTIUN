@@ -78,7 +78,6 @@ class DiaRutinaForm(forms.ModelForm):
             'nombre': 'Nombre del día',
         }
 
-
 class PerfilUsuarioForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario
@@ -94,12 +93,8 @@ class PerfilUsuarioForm(forms.ModelForm):
             'actualmente_entrenando',
         ]
         widgets = {
-            'rol': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'entrenador': forms.Select(attrs={
-                'class': 'form-select'
-            }),
+            'rol': forms.Select(attrs={'class': 'form-select'}),
+            'entrenador': forms.Select(attrs={'class': 'form-select'}),
             'descripcion': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
@@ -139,13 +134,41 @@ class PerfilUsuarioForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # 1. Extraemos el usuario actual que nos envía la vista
+        user_actual = kwargs.pop('user_actual', None)
+        
         super().__init__(*args, **kwargs)
         self.fields['nivel_experiencia'].required = False
         self.fields['entrenador'].required = False
         self.fields['entrenador'].empty_label = 'Sin entrenador asignado'
-        self.fields['entrenador'].queryset = User.objects.filter(
-            perfil__rol='entrenador'
-        )
+        
+        # Filtramos el desplegable para que solo muestre usuarios con rol 'entrenador'
+        entrenadores_qs = User.objects.filter(perfil__rol='entrenador')
+        
+        # 2. Excluimos al usuario logueado usando el parámetro que mandó la vista
+        if user_actual:
+            entrenadores_qs = entrenadores_qs.exclude(pk=user_actual.pk)
+        elif self.instance and hasattr(self.instance, 'usuario') and self.instance.usuario:
+            # Respaldo por si se renderiza en otro contexto usando la instancia
+            entrenadores_qs = entrenadores_qs.exclude(pk=self.instance.usuario.pk)
+            
+        self.fields['entrenador'].queryset = entrenadores_qs
+
+        self.fields['rol'].choices = [
+            (value, label)
+            for value, label in self.fields['rol'].choices
+            if value != 'admin'
+        ]
+
+    # 3. Capa de seguridad extra por detrás
+    def clean_entrenador(self):
+        entrenador = self.cleaned_data.get('entrenador')
+        
+        # Validación usando la relación .usuario correcta de tu modelo
+        if entrenador and hasattr(self.instance, 'usuario') and self.instance.usuario == entrenador:
+            raise forms.ValidationError("No puedes asignarte a ti mismo como tu propio entrenador.")
+            
+        return entrenador
 
 
 class FeedbackEntrenadorForm(forms.ModelForm):
