@@ -172,11 +172,11 @@ def catalogo_ejercicios(request):
         dia = get_object_or_404(DiaRutina, id=dia_id, rutina__usuario=request.user)
 
     return render(request, 'gym/catalogo.html', {
-        'page_obj':     page_obj,
-        'categorias':   categorias,
-        'musculos':     musculos,
+        'page_obj':      page_obj,
+        'categorias':    categorias,
+        'musculos':      musculos,
         'equipamientos': equipamientos,
-        'dia':          dia,
+        'dia':           dia,
         'filtros': {
             'categoria':    categoria,
             'musculo':      musculo,
@@ -221,7 +221,11 @@ def perfil(request):
     else:
         form = PerfilUsuarioForm(instance=perfil_usuario)
 
-    return render(request, 'gym/perfil.html', {'form': form, 'perfil': perfil_usuario})
+    return render(request, 'gym/perfil.html', {
+        'form':             form,
+        'perfil':           perfil_usuario,
+        'tiene_entrenador': perfil_usuario.entrenador is not None,
+    })
 
 
 def es_entrenador(request):
@@ -246,9 +250,9 @@ def panel_entrenador(request):
     ).count()
 
     return render(request, 'gym/panel_entrenador.html', {
-        'clientes':            clientes,
-        'total_clientes':      total_clientes,
-        'total_sesiones':      total_sesiones,
+        'clientes':             clientes,
+        'total_clientes':       total_clientes,
+        'total_sesiones':       total_sesiones,
         'sesiones_completadas': sesiones_completadas,
     })
 
@@ -279,8 +283,8 @@ def perfil_cliente(request, cliente_id):
         messages.error(request, 'No tienes permisos.')
         return redirect('gym:rutinas_list')
 
-    cliente         = get_object_or_404(User, id=cliente_id)
-    perfil_cli      = get_object_or_404(PerfilUsuario, usuario=cliente)
+    cliente    = get_object_or_404(User, id=cliente_id)
+    perfil_cli = get_object_or_404(PerfilUsuario, usuario=cliente)
 
     if perfil_cli.entrenador != request.user:
         messages.error(request, 'Este cliente no está asignado a ti.')
@@ -295,14 +299,12 @@ def perfil_cliente(request, cliente_id):
     sesiones_completadas = sesiones.filter(completada=True).count()
     feedback             = FeedbackEntrenador.objects.filter(cliente=cliente, entrenador=request.user)
 
-    # Peso máximo registrado por el cliente
     peso_max_cliente = (
         SerieRegistrada.objects
         .filter(ejercicio_registrado__sesion__cliente=cliente)
         .aggregate(m=Max('peso'))['m'] or 0
     )
 
-    # Datos gráfica de volumen (últimas 15 sesiones completadas)
     import json
     sesiones_graf = (
         Sesion.objects.filter(cliente=cliente, completada=True)
@@ -321,16 +323,16 @@ def perfil_cliente(request, cliente_id):
         grafica_volumen.append(round(vol, 1))
 
     return render(request, 'gym/perfil_cliente.html', {
-        'cliente':             cliente,
-        'perfil_cliente':      perfil_cli,
-        'rutinas':             rutinas,
-        'sesiones':            sesiones,
-        'total_sesiones':      total_sesiones,
+        'cliente':              cliente,
+        'perfil_cliente':       perfil_cli,
+        'rutinas':              rutinas,
+        'sesiones':             sesiones,
+        'total_sesiones':       total_sesiones,
         'sesiones_completadas': sesiones_completadas,
-        'feedback':            feedback,
-        'peso_max_cliente':    peso_max_cliente,
-        'grafica_labels':      json.dumps(grafica_labels),
-        'grafica_volumen':     json.dumps(grafica_volumen),
+        'feedback':             feedback,
+        'peso_max_cliente':     peso_max_cliente,
+        'grafica_labels':       json.dumps(grafica_labels),
+        'grafica_volumen':      json.dumps(grafica_volumen),
     })
 
 
@@ -340,9 +342,9 @@ def asignar_rutina(request, cliente_id):
         return HttpResponseForbidden()
 
     cliente        = get_object_or_404(User, id=cliente_id)
-    perfil_cliente = get_object_or_404(PerfilUsuario, usuario=cliente)
+    perfil_cli     = get_object_or_404(PerfilUsuario, usuario=cliente)
 
-    if perfil_cliente.entrenador != request.user:
+    if perfil_cli.entrenador != request.user:
         messages.error(request, 'No tienes permiso.')
         return redirect('gym:mis_clientes')
 
@@ -355,7 +357,7 @@ def asignar_rutina(request, cliente_id):
         nueva_rutina = Rutina.objects.create(
             usuario=cliente,
             nombre=f"{rutina.nombre} (Asignada)",
-            descripcion=rutina.descripcion
+            descripcion=rutina.descripcion,
         )
         for dia in rutina.dias.all():
             nuevo_dia = DiaRutina.objects.create(rutina=nueva_rutina, dia=dia.dia, nombre=dia.nombre)
@@ -377,10 +379,10 @@ def progreso_cliente(request, cliente_id):
     if not es_entrenador(request):
         return HttpResponseForbidden()
 
-    cliente        = get_object_or_404(User, id=cliente_id)
-    perfil_cliente = get_object_or_404(PerfilUsuario, usuario=cliente)
+    cliente    = get_object_or_404(User, id=cliente_id)
+    perfil_cli = get_object_or_404(PerfilUsuario, usuario=cliente)
 
-    if perfil_cliente.entrenador != request.user:
+    if perfil_cli.entrenador != request.user:
         messages.error(request, 'No tienes permiso.')
         return redirect('gym:mis_clientes')
 
@@ -405,10 +407,10 @@ def crear_feedback(request, cliente_id):
     if not es_entrenador(request):
         return HttpResponseForbidden()
 
-    cliente        = get_object_or_404(User, id=cliente_id)
-    perfil_cliente = get_object_or_404(PerfilUsuario, usuario=cliente)
+    cliente    = get_object_or_404(User, id=cliente_id)
+    perfil_cli = get_object_or_404(PerfilUsuario, usuario=cliente)
 
-    if perfil_cliente.entrenador != request.user:
+    if perfil_cli.entrenador != request.user:
         messages.error(request, 'No tienes permiso.')
         return redirect('gym:mis_clientes')
 
@@ -438,7 +440,6 @@ def crear_feedback(request, cliente_id):
 
 @login_required
 def iniciar_sesion(request, dia_id):
-    """Inicia una sesión de entrenamiento para un día de rutina."""
     dia = get_object_or_404(DiaRutina, id=dia_id, rutina__usuario=request.user)
 
     from django.utils import timezone
@@ -456,11 +457,8 @@ def iniciar_sesion(request, dia_id):
 
 @login_required
 def registrar_sesion(request, sesion_id):
-    """Formulario para registrar cada serie individualmente por ejercicio."""
-    sesion       = get_object_or_404(Sesion, id=sesion_id, cliente=request.user)
+    sesion         = get_object_or_404(Sesion, id=sesion_id, cliente=request.user)
     ejercicios_raw = list(sesion.dia_rutina.ejercicios.all())
-
-    # Diccionario ejercicio_id -> EjercicioRegistrado (con sus series prefetchadas)
     registros_previos = {
         r.ejercicio_id: r
         for r in sesion.ejercicios_registrados.prefetch_related('series').all()
@@ -468,10 +466,7 @@ def registrar_sesion(request, sesion_id):
 
     if request.method == 'POST':
         for ej in ejercicios_raw:
-            # Obtener o crear el EjercicioRegistrado para este ejercicio en esta sesión
             er, _ = EjercicioRegistrado.objects.get_or_create(sesion=sesion, ejercicio=ej)
-
-            # Borrar series previas y recrearlas con los nuevos valores enviados
             er.series.all().delete()
 
             for i in range(1, ej.series + 1):
@@ -490,22 +485,16 @@ def registrar_sesion(request, sesion_id):
                     except (ValueError, TypeError):
                         pass
 
-        sesion.notas = request.POST.get('notas_sesion', '')
-        accion = request.POST.get('accion', 'guardar')
-        if accion == 'completar':
-            sesion.notas = request.POST.get('notas_sesion', '')
-            sesion.completada = True
-            sesion.save()
-            messages.success(request, f'¡Sesión de {sesion.dia_rutina} completada! 💪')
-            return redirect('gym:historial_sesiones')
+        sesion.notas    = request.POST.get('notas_sesion', '')
+        sesion.completada = True
+        sesion.save()
+        messages.success(request, f'¡Sesión de {sesion.dia_rutina} completada!')
+        return redirect('gym:historial_sesiones')
 
-    # ── GET: preparar datos para el template ─────────────────────────────────
     ejercicios_con_registro = []
     for ej in ejercicios_raw:
-        er = registros_previos.get(ej.id)
-        # Construir diccionario num_serie -> SerieRegistrada para rellenar valores previos
+        er          = registros_previos.get(ej.id)
         series_dict = {s.numero_serie: s for s in er.series.all()} if er else {}
-
         series_filas = []
         for i in range(1, ej.series + 1):
             s = series_dict.get(i)
@@ -515,7 +504,6 @@ def registrar_sesion(request, sesion_id):
                 'peso':  s.peso        if s else '',
                 'notas': s.notas       if s else '',
             })
-
         ejercicios_con_registro.append({
             'ejercicio':    ej,
             'series_filas': series_filas,
@@ -523,17 +511,15 @@ def registrar_sesion(request, sesion_id):
         })
 
     return render(request, 'gym/registrar_sesion.html', {
-        'sesion':                 sesion,
+        'sesion':                  sesion,
         'ejercicios_con_registro': ejercicios_con_registro,
     })
 
 
 @login_required
 def historial_sesiones(request):
-    """Historial de sesiones del usuario con gráfica de volumen."""
     sesiones  = Sesion.objects.filter(cliente=request.user).select_related(
-        'rutina',
-        'dia_rutina',
+        'rutina', 'dia_rutina',
     ).prefetch_related(
         'ejercicios_registrados__series',
         'ejercicios_registrados__ejercicio',
@@ -548,7 +534,6 @@ def historial_sesiones(request):
     page_obj  = paginator.get_page(request.GET.get('page'))
     rutinas   = request.user.rutinas.all()
 
-    # Gráfica de volumen (series × reps × peso) por sesión completada
     import json
     qs_grafica = Sesion.objects.filter(cliente=request.user, completada=True)
     if rutina_id:
@@ -569,9 +554,9 @@ def historial_sesiones(request):
         grafica_volumen.append(round(vol, 1))
 
     return render(request, 'gym/historial_sesiones.html', {
-        'page_obj':       page_obj,
-        'rutinas':        rutinas,
-        'rutina_id':      rutina_id,
+        'page_obj':        page_obj,
+        'rutinas':         rutinas,
+        'rutina_id':       rutina_id,
         'grafica_labels':  json.dumps(grafica_labels),
         'grafica_volumen': json.dumps(grafica_volumen),
     })
@@ -579,10 +564,8 @@ def historial_sesiones(request):
 
 @login_required
 def mi_progreso(request):
-    """Vista de progreso personal con gráficas por ejercicio."""
     import json
 
-    # Ejercicios que el usuario ha registrado alguna vez
     ejercicios_registrados = (
         EjercicioRegistrado.objects
         .filter(sesion__cliente=request.user)
@@ -611,7 +594,6 @@ def mi_progreso(request):
                 series = list(er.series.all())
                 if not series:
                     continue
-                # Peso máximo de la sesión y volumen total
                 peso_max = max((float(s.peso or 0) for s in series), default=0)
                 vol      = sum(float(s.peso or 0) * s.repeticiones for s in series)
                 grafica_labels.append(er.sesion.fecha.strftime('%d/%m'))
@@ -620,7 +602,6 @@ def mi_progreso(request):
         except Ejercicio.DoesNotExist:
             pass
 
-    # Stats globales
     total_sesiones       = Sesion.objects.filter(cliente=request.user, completada=True).count()
     total_ejercicios_log = EjercicioRegistrado.objects.filter(sesion__cliente=request.user).count()
     peso_maximo = (
@@ -669,7 +650,6 @@ No respondas preguntas que no tengan relación con el entrenamiento, la salud de
 
 
 def _llamar_api_anthropic(messages_historial):
-    """Llama a la API de Anthropic y devuelve el texto de la respuesta."""
     from django.conf import settings as dj_settings
     api_key = getattr(dj_settings, 'ANTHROPIC_API_KEY', '')
     if not api_key:
@@ -701,7 +681,6 @@ def _llamar_api_anthropic(messages_historial):
 
 @login_required
 def chatbot(request):
-    """Página principal del chatbot."""
     if 'chatbot_historial' not in request.session:
         request.session['chatbot_historial'] = []
     historial = request.session['chatbot_historial']
@@ -710,7 +689,6 @@ def chatbot(request):
 
 @login_required
 def chatbot_mensaje(request):
-    """Endpoint AJAX: recibe el mensaje del usuario y devuelve la respuesta."""
     if request.method != 'POST':
         from django.http import JsonResponse
         return JsonResponse({'error': 'Método no permitido'}, status=405)
@@ -726,7 +704,6 @@ def chatbot_mensaje(request):
     if not mensaje_usuario:
         return JsonResponse({'error': 'Mensaje vacío'}, status=400)
 
-    # Recuperar historial de la sesión (máx. 20 turnos para no gastar tokens)
     historial = request.session.get('chatbot_historial', [])
     historial.append({'role': 'user', 'content': mensaje_usuario})
     if len(historial) > 40:
@@ -738,7 +715,6 @@ def chatbot_mensaje(request):
         return JsonResponse({'error': 'api_key'}, status=200)
     except urllib.error.HTTPError as e:
         error_body = e.read().decode('utf-8', errors='replace')
-        # Si no hay API key configurada, dar mensaje útil en lugar de error crudo
         if e.code in (401, 403):
             return JsonResponse({'error': 'api_key'}, status=200)
         return JsonResponse({'error': f'Error API ({e.code}): {error_body[:200]}'}, status=500)
@@ -754,7 +730,6 @@ def chatbot_mensaje(request):
 
 @login_required
 def chatbot_limpiar(request):
-    """Limpia el historial del chatbot."""
     request.session['chatbot_historial'] = []
     request.session.modified = True
     from django.http import JsonResponse
