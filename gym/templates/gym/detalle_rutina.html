@@ -4,7 +4,6 @@
 
 {% block content %}
 <div class="container">
-    <!-- Cabecera de la rutina -->
     <div class="routine-header">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
@@ -25,7 +24,7 @@
                 <a href="{% url 'gym:crear_dia' rutina.id %}" class="btn btn-custom-primary">
                     + Añadir día
                 </a>
-                <a href="{% url 'gym:eliminar_rutina' rutina.id %}" class="btn btn-outline-danger btn-sp-sm">
+                <a href="{% url 'gym:eliminar_rutina' rutina.id %}" class="btn btn-danger">
                     Eliminar rutina
                 </a>
             </div>
@@ -37,7 +36,6 @@
         </div>
     </div>
 
-    <!-- Sin días aún -->
     {% if not dias %}
     <div class="text-center py-5 text-muted">
         <p class="mb-3">Esta rutina no tiene días configurados todavía.</p>
@@ -47,7 +45,6 @@
     </div>
 
     {% else %}
-    <!-- Días de la rutina -->
     <div class="accordion mt-4" id="acordeonDias">
         {% for dia in dias %}
         <div class="accordion-item border mb-3 rounded-3 overflow-hidden shadow-sm">
@@ -72,7 +69,6 @@
                 data-bs-parent="#acordeonDias">
                 <div class="accordion-body pt-3">
 
-                    <!-- Acciones del día -->
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <div class="d-flex gap-2">
                             <a href="{% url 'gym:crear_ejercicio' dia.id %}" class="btn btn-custom-primary btn-sp-sm">
@@ -80,11 +76,11 @@
                             </a>
                             <a href="{% url 'gym:catalogo_ejercicios' %}?dia_id={{ dia.id }}"
                                class="btn btn-sp-secondary btn-sp-sm">
-                                Desde catálogo
+                                 Desde catálogo
                             </a>
                             <a href="{% url 'gym:iniciar_sesion' dia.id %}"
                                class="btn btn-sp-success btn-sp-sm">
-                                💪 Entrenar
+                                 💪 Entrenar
                             </a>
                         </div>
                         <a href="{% url 'gym:eliminar_dia' dia.id %}" class="btn btn-sp-danger btn-sp-sm">
@@ -102,7 +98,7 @@
                                         <h6 class="fw-bold mb-0 text-dark">{{ ejercicio.nombre }}</h6>
                                         <a href="{% url 'gym:eliminar_ejercicio' ejercicio.id %}"
                                            class="btn btn-link text-danger p-0 ms-2">
-                                            <small>✕</small>
+                                             <small>✕</small>
                                         </a>
                                     </div>
 
@@ -125,7 +121,7 @@
                                         {% endif %}
                                     </div>
 
-                                    {% if ejercicio.notas %}
+                                    {% if ejercicio.notes or ejercicio.notas %}
                                     <div class="bg-light p-2 rounded-3 mt-2">
                                         <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size:.65rem;">Notas</small>
                                         <p class="card-text small mb-0">{{ ejercicio.notas }}</p>
