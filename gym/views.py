@@ -554,12 +554,17 @@ def historial_sesiones(request):
         grafica_labels.append(s.fecha.strftime('%d/%m'))
         grafica_volumen.append(round(vol, 1))
 
+    feedback_recibido = FeedbackEntrenador.objects.filter(
+        cliente=request.user
+    ).select_related('entrenador', 'rutina').order_by('-fecha_creacion')
+
     return render(request, 'gym/historial_sesiones.html', {
-        'page_obj':        page_obj,
-        'rutinas':         rutinas,
-        'rutina_id':       rutina_id,
-        'grafica_labels':  json.dumps(grafica_labels),
-        'grafica_volumen': json.dumps(grafica_volumen),
+        'page_obj':         page_obj,
+        'rutinas':          rutinas,
+        'rutina_id':        rutina_id,
+        'grafica_labels':   json.dumps(grafica_labels),
+        'grafica_volumen':  json.dumps(grafica_volumen),
+        'feedback_recibido': feedback_recibido,
     })
 
 
