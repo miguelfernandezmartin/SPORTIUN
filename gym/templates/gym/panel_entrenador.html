@@ -58,20 +58,22 @@
             <small class="text-muted">{{ perfil.usuario.email|default:"Sin email" }}</small>
           </div>
         </div>
-        <div class="d-flex flex-wrap gap-2 mb-3">
+        <div class="d-flex flex-wrap gap-1 mb-3">
           <span class="badge bg-light text-dark border">{{ perfil.get_nivel_experiencia_display|default:"Sin nivel" }}</span>
           {% if perfil.actualmente_entrenando %}
           <span class="badge bg-success-subtle text-success">Activo</span>
           {% else %}
           <span class="badge bg-secondary-subtle text-muted">En pausa</span>
           {% endif %}
+          <span class="badge bg-light text-dark border">{{ perfil.usuario.rutinas.count }} rutina{% if perfil.usuario.rutinas.count != 1 %}s{% endif %}</span>
         </div>
         {% if perfil.objetivo %}
-        <p class="text-muted small mb-3">🎯 {{ perfil.objetivo|truncatechars:60 }}</p>
+        <p class="text-muted small mb-3">{{ perfil.objetivo|truncatechars:55 }}</p>
         {% endif %}
-        <div class="d-flex gap-2">
-          <a href="{% url 'gym:perfil_cliente' perfil.usuario.id %}" class="btn btn-sm btn-custom-primary flex-fill text-center">Ver perfil</a>
-          <a href="{% url 'gym:progreso_cliente' perfil.usuario.id %}" class="btn btn-sm btn-outline-secondary">📊</a>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'gym:perfil_cliente' perfil.usuario.id %}" class="btn btn-custom-primary btn-sp-sm flex-fill text-center">Perfil</a>
+          <a href="{% url 'gym:progreso_cliente' perfil.usuario.id %}" class="btn btn-sp-secondary btn-sp-sm">Progreso</a>
+          <a href="{% url 'gym:crear_feedback' perfil.usuario.id %}" class="btn btn-sp-ghost btn-sp-sm">Feedback</a>
         </div>
       </div>
     </div>
