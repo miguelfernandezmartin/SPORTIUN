@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'gym:rutinas_list'
 LOGOUT_REDIRECT_URL = 'core:inicio'
 LOGIN_URL = 'core:login'
-# ─── Configuración de producción / Render ────────────────────────────────────
+# ─── Configuración de producción (Railway / cualquier PaaS) ──────────────────
 import os
 import dj_database_url
 
