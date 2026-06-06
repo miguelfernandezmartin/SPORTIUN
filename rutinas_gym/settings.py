@@ -138,6 +138,7 @@ LOGOUT_REDIRECT_URL = 'core:inicio'
 LOGIN_URL = 'core:login'
 # ─── Configuración de producción / Render ────────────────────────────────────
 import os
+import dj_database_url
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', SECRET_KEY)
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -145,6 +146,11 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 _hosts = os.environ.get('ALLOWED_HOSTS', '')
 if _hosts:
     ALLOWED_HOSTS = [h.strip() for h in _hosts.split(',')]
+
+# Base de datos: PostgreSQL en producción (Render), SQLite en local
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
 # WhiteNoise para servir estáticos en producción
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
